@@ -20,7 +20,7 @@ namespace BeyondCompareSqlLite.CLI
 
         public static void PrintFileDoesntExists(string source)
         {
-            Console.Out.WriteLine("File \"{0}\" doenst exists.", source);
+            Console.Out.WriteLine("File \"{0}\" doens't exists.", source);
         }
     }
 }

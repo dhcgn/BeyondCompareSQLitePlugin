@@ -12,6 +12,7 @@ namespace BeyondCompareSqlLite.Test
     public class UnitTest1
     {
         private const string SampleSqlite = "Chinook_Sqlite.sqlite";
+        private const string SampleSqliteSecond = "Chinook_Sqlite_second.sqlite";
 
         [TestInitialize]
         public void Setup()

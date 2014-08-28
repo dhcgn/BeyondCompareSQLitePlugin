@@ -7,6 +7,8 @@ namespace BeyondCompareSqlLite.Model
 {
     public class DbContext
     {
+        #region Public
+
         public static List<TableContent> GetTableContent(string source)
         {
             List<TableContent> tablesContent;
@@ -20,6 +22,10 @@ namespace BeyondCompareSqlLite.Model
 
             return tablesContent;
         }
+
+        #endregion
+
+        #region Private
 
         private static List<string> GetTables(SQLiteConnection dbConnection)
         {
@@ -117,5 +123,7 @@ namespace BeyondCompareSqlLite.Model
             }
             return tables.ToList();
         }
+
+        #endregion
     }
 }

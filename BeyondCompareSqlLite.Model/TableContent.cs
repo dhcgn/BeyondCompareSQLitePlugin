@@ -9,15 +9,26 @@ namespace BeyondCompareSqlLite.Model
     {
         private const string Spacer = "------------------------------------------------------------------------------------------------------------------";
 
+        #region .ctor
+
         public TableContent(string table)
         {
             TableName = table;
         }
 
+        #endregion
+
+        #region Properties
+
         public string TableName { get; set; }
 
         public List<string> ColumnNames { get; set; }
+
         public string[,] Data { get; set; }
+
+        #endregion
+
+        #region Public
 
         public string GetReport()
         {
@@ -26,7 +37,7 @@ namespace BeyondCompareSqlLite.Model
             sb.AppendLine("Table: " + TableName);
             sb.AppendLine(Spacer);
 
-            List<Tuple<string, int>> colmnWidths = GetColumnWidths();
+            List<Tuple<string, int>> colmnWidths = GetColumnMaxWidths();
 
             foreach (var columnName in this.ColumnNames)
             {
@@ -57,7 +68,11 @@ namespace BeyondCompareSqlLite.Model
             return sb.ToString();
         }
 
-        private List<Tuple<string, int>> GetColumnWidths()
+        #endregion
+
+        #region Private
+
+        private List<Tuple<string, int>> GetColumnMaxWidths()
         {
             var result = new List<Tuple<string, int>>();
 
@@ -79,5 +94,7 @@ namespace BeyondCompareSqlLite.Model
 
             return result;
         }
+
+        #endregion
     }
 }

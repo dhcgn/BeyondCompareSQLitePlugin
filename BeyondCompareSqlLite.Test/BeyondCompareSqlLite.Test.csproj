@@ -67,6 +67,9 @@
       <Name>BeyondCompareSqlLite.CLI</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="TestData\Chinook_Sqlite_second.sqlite" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

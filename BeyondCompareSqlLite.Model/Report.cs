@@ -9,12 +9,15 @@ namespace BeyondCompareSqlLite.Model
     {
         private const string Spacer = "##################################################################################################################";
 
+        #region Public
+
         public static void CreateTextReport(List<TableContent> tablesContentList, string target)
         {
             var sb = new StringBuilder();
             sb.AppendLine(Spacer);
             sb.AppendLine("Tables");
             sb.AppendLine(Spacer);
+
             foreach (var table in tablesContentList.Select(x => x.TableName))
             {
                 sb.AppendLine(table);
@@ -30,6 +33,8 @@ namespace BeyondCompareSqlLite.Model
             sb.AppendLine("Schema");
             sb.AppendLine(Spacer);
 
+            // Todo
+
             sb.AppendLine(Spacer);
             sb.AppendLine("Content");
             sb.AppendLine(Spacer);
@@ -43,12 +48,16 @@ namespace BeyondCompareSqlLite.Model
             File.WriteAllText(target, sb.ToString(), Encoding.UTF8);
         }
 
+        #endregion
+
+        #region Private
+
         private static void CreateTablesSummary(List<TableContent> tablesContentList, StringBuilder sb)
         {
             var tables = tablesContentList.Select(x => x.TableName);
             var maxWidth = tables.Select(x => x.Length).OrderByDescending(x => x).First();
 
-            sb.AppendLine(string.Format("{0},{1,10},{2,10}", "table".PadLeft(maxWidth), "columns", "rows"));
+            sb.AppendLine(string.Format("{0}|{1,10}|{2,10}", "table".PadRight(maxWidth), "columns", "rows"));
 
             foreach (var table in tables)
             {
@@ -62,8 +71,10 @@ namespace BeyondCompareSqlLite.Model
                     rows = temp.Data.GetLength(1);
                 }
 
-                sb.AppendLine(string.Format("{0," + maxWidth + "},{1,10},{2,10}", table, columns, rows));
+                sb.AppendLine(string.Format("{0}|{1,10}|{2,10}", table.PadRight(maxWidth), columns, rows));
             }
         }
+
+        #endregion
     }
 }
