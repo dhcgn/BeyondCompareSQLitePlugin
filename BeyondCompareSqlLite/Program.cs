@@ -31,8 +31,8 @@ namespace BeyondCompareSqlLite.CLI
 
             try
             {
-                List<TableContent> tableContentList = DbContext.GetTableContent(source);
-                Report.CreateTextReport(tableContentList, target);
+                var databaseContent  = DbContext.GetTableContent(source);
+                Report.CreateTextReport(databaseContent, target);
             }
             catch (Exception e)
             {

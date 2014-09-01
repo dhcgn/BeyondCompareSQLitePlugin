@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.SQLite;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace BeyondCompareSqlLite.Model
 {
@@ -9,8 +12,9 @@ namespace BeyondCompareSqlLite.Model
     {
         #region Public
 
-        public static List<TableContent> GetTableContent(string source)
+        public static DatabaseContent GetTableContent(string source)
         {
+            var result = new DatabaseContent();
             List<TableContent> tablesContent;
             using (var connection = new SQLiteConnection(String.Format("Data Source={0};Version=3;Read Only=True;", source)))
             {
@@ -18,9 +22,13 @@ namespace BeyondCompareSqlLite.Model
 
                 var tables = GetTables(connection);
                 tablesContent = GetTableContent(tables, connection);
+                result.TableContent = tablesContent;
+
+                result.SchemaVersion = GetSchemaVersion(connection);
+                result.UserVersion = GetUserersion(connection);
             }
 
-            return tablesContent;
+            return result;
         }
 
         #endregion
@@ -43,6 +51,34 @@ namespace BeyondCompareSqlLite.Model
             return tables.OrderBy(x => x).ToList();
         }
 
+        private static int GetSchemaVersion(SQLiteConnection dbConnection)
+        {
+            string sql = "PRAGMA schema_version;";
+            var command = new SQLiteCommand(sql, dbConnection);
+            var reader = command.ExecuteReader();
+
+            int result = 0;
+            while (reader.Read())
+            {
+                result = reader.GetInt32(0);
+            }
+            return result;
+        }
+
+        private static int GetUserersion(SQLiteConnection dbConnection)
+        {
+            string sql = "PRAGMA user_version;";
+            var command = new SQLiteCommand(sql, dbConnection);
+            var reader = command.ExecuteReader();
+
+            int result = 0;
+            while (reader.Read())
+            {
+                result = reader.GetInt32(0);
+            }
+            return result;
+        }
+
         private static List<TableContent> GetTableContent(List<string> tables, SQLiteConnection dbConnection)
         {
             var result = new List<TableContent>();
@@ -53,11 +89,33 @@ namespace BeyondCompareSqlLite.Model
 
                 tableContent.ColumnNames = GetColumnName(table, dbConnection);
                 tableContent.Data = GetTableData(table, tableContent.ColumnNames, dbConnection);
-
+                tableContent.SchemaHash = GetTableSchemaHash(table, dbConnection);
                 result.Add(tableContent);
             }
 
             return result;
+        }
+
+        private static string GetTableSchemaHash(string table, SQLiteConnection dbConnection)
+        {
+            string sql = String.Format("PRAGMA table_info({0});", table);
+
+            var command = new SQLiteCommand(sql, dbConnection);
+            var reader = command.ExecuteReader();
+
+            var sb = new StringBuilder();
+
+            while (reader.Read())
+            {
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    sb.AppendLine(reader.GetValue(i).ToString());
+                }
+            }
+
+            var hash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(sb.ToString()));
+
+            return BitConverter.ToString(hash).Replace("-",String.Empty).ToLower();
         }
 
 
@@ -128,5 +186,12 @@ namespace BeyondCompareSqlLite.Model
         }
 
         #endregion
+    }
+
+    public class DatabaseContent
+    {
+        public List<TableContent> TableContent { get; set; }
+        public int SchemaVersion { get; set; }
+        public int UserVersion { get; set; }
     }
 }

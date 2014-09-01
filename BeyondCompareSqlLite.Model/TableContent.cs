@@ -25,6 +25,7 @@ namespace BeyondCompareSqlLite.Model
         public List<string> ColumnNames { get; set; }
 
         public string[,] Data { get; set; }
+        public string SchemaHash { get; set; }
 
         #endregion
 
