@@ -65,7 +65,10 @@ namespace BeyondCompareSqlLite.Model
         {
             var result = new string[width, hight];
 
-            string sql = String.Format("SELECT * FROM {0};", table);
+            string sql = String.Format("SELECT * FROM {0} ORDER BY {1};",
+                          table, 
+                          Enumerable.Range(1, width).Select(i => i.ToString()).Aggregate((a, b) => a + ", " + b));
+
             var command = new SQLiteCommand(sql, dbConnection);
             var reader = command.ExecuteReader();
 
