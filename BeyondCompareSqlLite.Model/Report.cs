@@ -14,6 +14,12 @@ namespace BeyondCompareSqlLite.Model
 
         public static void CreateTextReport(DatabaseContent tablesContentList, string target)
         {
+            var sb = CreateTextReportInternal(tablesContentList);
+            File.WriteAllText(target, sb, Encoding.UTF8);
+        }
+
+        private static string CreateTextReportInternal(DatabaseContent tablesContentList)
+        {
             var sb = new StringBuilder();
             sb.AppendLine(Spacer);
             sb.AppendLine("DataBase overview");
@@ -43,7 +49,7 @@ namespace BeyondCompareSqlLite.Model
             }
 
             sb.AppendLine("EOF");
-            File.WriteAllText(target, sb.ToString(), Encoding.UTF8);
+            return sb.ToString();
         }
 
         #endregion
@@ -77,5 +83,46 @@ namespace BeyondCompareSqlLite.Model
         }
 
         #endregion
+
+
+        public static string CreateTextReportPowershell(DatabaseContent tablesContentList)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(Spacer);
+            sb.AppendLine("DataBase overview");
+            sb.AppendLine(Spacer);
+            sb.AppendFormat("SchemaVersion: {0,10}{1}", tablesContentList.SchemaVersion, Environment.NewLine);
+            sb.AppendFormat("UserVersion:   {0,10}{1}", tablesContentList.UserVersion, Environment.NewLine);
+
+            sb.AppendLine(Spacer);
+            sb.AppendLine("Tables overview");
+            sb.AppendLine(Spacer);
+
+            CreateTablesSummary(tablesContentList.TableContent, sb);
+
+            //sb.AppendLine(Spacer);
+            //sb.AppendLine("Schema");
+            //sb.AppendLine(Spacer);
+
+            // Todo Schema
+
+            sb.AppendLine(Spacer);
+            sb.AppendLine("Content");
+            sb.AppendLine(Spacer);
+
+            foreach (var tablesContent in tablesContentList.TableContent)
+            {
+                sb.AppendLine(tablesContent.GetReportPowerShell());
+            }
+
+            sb.AppendLine("EOF");
+            return sb.ToString();
+        }
+
+        public static string CreateTextReport(DatabaseContent tablesContentList)
+        {
+            var report = CreateTextReportInternal(tablesContentList);
+            return report;
+        }
     }
 }
