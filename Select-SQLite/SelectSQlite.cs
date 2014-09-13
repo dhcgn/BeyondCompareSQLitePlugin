@@ -65,13 +65,18 @@ namespace PowershellSQLite
             }
 
             var runtimeDefinedParameterDictionary = new RuntimeDefinedParameterDictionary();
-            runtimeDefinedParameterDictionary.Add("Tables",
-                new RuntimeDefinedParameter("Tables", typeof (string[]),
-                    new Collection<Attribute> {new ParameterAttribute(), new ValidateSetAttribute(tableNames.ToArray())}));
+            var attributes = new Collection<Attribute>
+            {
+                new ParameterAttribute
+                {
+                    Position = 2,
+                    HelpMessage = "Table names"
+                },
+                new ValidateSetAttribute(tableNames.ToArray()),
+            };
 
-
+            runtimeDefinedParameterDictionary.Add("Tables", new RuntimeDefinedParameter("Tables", typeof (string[]), attributes));
             _staticStroage = runtimeDefinedParameterDictionary;
-
 
             return runtimeDefinedParameterDictionary;
         }
