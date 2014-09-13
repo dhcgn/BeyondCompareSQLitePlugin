@@ -97,5 +97,37 @@ namespace BeyondCompareSqlLite.Model
         }
 
         #endregion
+
+        public string GetReportPowerShell()
+        {
+            var sb = new StringBuilder();
+           
+            foreach (var columnName in this.ColumnNames)
+            {
+                sb.Append(columnName+ "; ");
+            }
+
+            sb.Append(Environment.NewLine);
+
+            if (Data.Length == 0) return sb.ToString();
+
+            var i1 = Data.GetLength(1);
+            for (int i = 0; i < i1; i++)
+            {
+                sb.Append(Environment.NewLine);
+                sb.Append("Table:" + TableName+"; ");
+                var colCnt = 0;
+                foreach (var columnName in ColumnNames)
+                {
+                    var s = Data[colCnt, i];
+                    if (String.IsNullOrWhiteSpace(s))
+                        s = "-";
+                    sb.Append(columnName+": " + s + "; ");
+                    colCnt++;
+                }
+            }
+
+            return sb.ToString();
+        }
     }
 }

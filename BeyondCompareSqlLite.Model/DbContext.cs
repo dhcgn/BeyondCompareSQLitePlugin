@@ -12,6 +12,17 @@ namespace BeyondCompareSqlLite.Model
     {
         #region Public
 
+        public static List<string> GetTableNamesContent(string source)
+        {
+            List<string> tables;
+            using (var connection = new SQLiteConnection(String.Format("Data Source={0};Version=3;Read Only=True;", source)))
+            {
+                connection.Open();
+                tables = GetTables(connection);
+            }
+            return tables;
+        }
+
         public static DatabaseContent GetTableContent(string source)
         {
             var result = new DatabaseContent();
@@ -186,6 +197,7 @@ namespace BeyondCompareSqlLite.Model
         }
 
         #endregion
+
     }
 
     public class DatabaseContent
