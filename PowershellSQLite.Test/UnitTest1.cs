@@ -13,19 +13,7 @@ namespace PowershellSQLite.Test
         [TestMethod]
         public void TestMethod1()
         {
-            
-            
-            
-            var tableDynamicParameters = new TableDynamicParameters();
-            var typeDescriptionProvider = TypeDescriptor.AddAttributes(tableDynamicParameters, new ValidateSetAttribute("Table1_New", "Table2_New"));
-            var tableDynamicParameters_new = (TableDynamicParameters)typeDescriptionProvider.CreateInstance(new ServiceContainer(), tableDynamicParameters.GetType(), null, null);
-
-        
-           
-            // var prop = TypeDescriptor.CreateProperty(tableDynamicParameters.GetType(), "Tables", tableDynamicParameters.GetType(), new ValidateSetAttribute("Auto", "Vogel"));
-                 
-       
-           
+          
         }
     }
 }

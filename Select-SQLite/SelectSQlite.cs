@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.Design;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using BeyondCompareSqlLite.Model;
 
 namespace PowershellSQLite
 {
     [Cmdlet(VerbsCommon.Select, "SQLite")]
-    public class SelectSQlite : PSCmdlet , IDynamicParameters
+    public class SelectSQlite : PSCmdlet, IDynamicParameters
     {
+        private const string FormatRaw = "Raw";
+        private const string FormatHumanReadable = "HumanReadable";
         private static readonly Dictionary<string, List<string>> TablesCache = new Dictionary<string, List<string>>();
+        private static RuntimeDefinedParameterDictionary _staticStroage;
+        private string _format = FormatRaw;
 
         [Parameter(
             Mandatory = true,
@@ -26,37 +28,19 @@ namespace PowershellSQLite
         [ValidateNotNullOrEmpty]
         public string Path { get; set; }
 
-
-        
+        [Parameter(
+            Mandatory = false,
+            Position = 1,
+            HelpMessage = "For Select-String use \"Raw\" for better readablility use \"HumanReadable\""
+            )]
+        [ValidateSet(new[] {FormatHumanReadable, FormatRaw}, IgnoreCase = true)]
+        public string Format
+        {
+            get { return _format; }
+            set { _format = value; }
+        }
 
         public string[] Tables { get; set; }
-
-   //RuntimeDefinedParameterDictionary
-
-        protected override void BeginProcessing()
-        {
-            WriteObject("BeginProcessing");
-
-            if (!File.Exists(Path))
-            {
-                WriteError(new ErrorRecord(new FileNotFoundException("File not found", Path), "PowershellSQLite_Error:001", ErrorCategory.ObjectNotFound, Path));
-            }
-
-            base.BeginProcessing();
-        }
-
-        protected override void ProcessRecord()
-        {
-            WriteObject("ProcessRecord");
-            base.ProcessRecord();
-        }
-
-        protected override void EndProcessing()
-        {
-            WriteObject("EndProcessing");
-            base.EndProcessing();
-        }
-
 
         public object GetDynamicParameters()
         {
@@ -77,22 +61,67 @@ namespace PowershellSQLite
                 }
                 catch (Exception e)
                 {
-
                 }
             }
 
+            var runtimeDefinedParameterDictionary = new RuntimeDefinedParameterDictionary();
+            runtimeDefinedParameterDictionary.Add("Tables",
+                new RuntimeDefinedParameter("Tables", typeof (string[]),
+                    new Collection<Attribute> {new ParameterAttribute(), new ValidateSetAttribute(tableNames.ToArray())}));
 
-            var tableDynamicParameters = new TableDynamicParameters();
-            var typeDescriptionProvider = TypeDescriptor.AddAttributes(tableDynamicParameters, new ValidateSetAttribute("Table1_New", "Table2_New"));
 
-            return tableDynamicParameters;
+            _staticStroage = runtimeDefinedParameterDictionary;
+
+
+            return runtimeDefinedParameterDictionary;
         }
-    }
 
-    public class TableDynamicParameters
-    {
-        [Parameter]
-        [ValidateSet("Table1", "Table2")]
-        public string[] Tables { get; set; }
+        protected override void BeginProcessing()
+        {
+            WriteObject("BeginProcessing");
+
+            if (!File.Exists(Path))
+            {
+                WriteError(new ErrorRecord(new FileNotFoundException("File not found", Path), "PowershellSQLite_Error:001", ErrorCategory.ObjectNotFound, Path));
+            }
+
+            base.BeginProcessing();
+        }
+
+        protected override void ProcessRecord()
+        {
+            var tables = new List<string>();
+
+            KeyValuePair<string, RuntimeDefinedParameter> runtimeDefinedParameterTables = _staticStroage.FirstOrDefault(x => x.Key == "Tables");
+            if (runtimeDefinedParameterTables.Value != null)
+            {
+                tables = new List<string>(runtimeDefinedParameterTables.Value.Value as string[]);
+            }
+
+            DatabaseContent databaseContent = DbContext.GetTableContent(Path, tables);
+
+            string output = String.Empty;
+
+            switch (Format)
+            {
+                case FormatRaw:
+                    output = Report.CreateTextReportPowershell(databaseContent);
+                    break;
+                case FormatHumanReadable:
+                    output = Report.CreateTextReport(databaseContent);
+                    break;
+            }
+
+            string[] result = Regex.Split(output, "\r\n|\r|\n");
+
+            WriteObject(result, true);
+
+            base.ProcessRecord();
+        }
+
+        protected override void EndProcessing()
+        {
+            base.EndProcessing();
+        }
     }
 }

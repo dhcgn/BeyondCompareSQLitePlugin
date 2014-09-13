@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data.SQLite;
 using System.Linq;
 using System.Security.Cryptography;
@@ -31,7 +30,7 @@ namespace BeyondCompareSqlLite.Model
             {
                 connection.Open();
 
-                var tables = GetTables(connection);
+                List<string> tables = GetTables(connection);
                 tablesContent = GetTableContent(tables, connection);
                 result.TableContent = tablesContent;
 
@@ -50,7 +49,7 @@ namespace BeyondCompareSqlLite.Model
         {
             string sql = "SELECT name FROM sqlite_master WHERE type='table';";
             var command = new SQLiteCommand(sql, dbConnection);
-            var reader = command.ExecuteReader();
+            SQLiteDataReader reader = command.ExecuteReader();
 
             var tables = new List<string>();
 
@@ -66,7 +65,7 @@ namespace BeyondCompareSqlLite.Model
         {
             string sql = "PRAGMA schema_version;";
             var command = new SQLiteCommand(sql, dbConnection);
-            var reader = command.ExecuteReader();
+            SQLiteDataReader reader = command.ExecuteReader();
 
             int result = 0;
             while (reader.Read())
@@ -80,7 +79,7 @@ namespace BeyondCompareSqlLite.Model
         {
             string sql = "PRAGMA user_version;";
             var command = new SQLiteCommand(sql, dbConnection);
-            var reader = command.ExecuteReader();
+            SQLiteDataReader reader = command.ExecuteReader();
 
             int result = 0;
             while (reader.Read())
@@ -94,7 +93,7 @@ namespace BeyondCompareSqlLite.Model
         {
             var result = new List<TableContent>();
 
-            foreach (var table in tables)
+            foreach (string table in tables)
             {
                 var tableContent = new TableContent(table);
 
@@ -112,7 +111,7 @@ namespace BeyondCompareSqlLite.Model
             string sql = String.Format("PRAGMA table_info({0});", table);
 
             var command = new SQLiteCommand(sql, dbConnection);
-            var reader = command.ExecuteReader();
+            SQLiteDataReader reader = command.ExecuteReader();
 
             var sb = new StringBuilder();
 
@@ -124,9 +123,9 @@ namespace BeyondCompareSqlLite.Model
                 }
             }
 
-            var hash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(sb.ToString()));
+            byte[] hash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(sb.ToString()));
 
-            return BitConverter.ToString(hash).Replace("-",String.Empty).ToLower();
+            return BitConverter.ToString(hash).Replace("-", String.Empty).ToLower();
         }
 
 
@@ -135,13 +134,13 @@ namespace BeyondCompareSqlLite.Model
             var result = new string[width, hight];
 
             string sql = String.Format("SELECT * FROM {0} ORDER BY {1};",
-                          table, 
-                          Enumerable.Range(1, width).Select(i => i.ToString()).Aggregate((a, b) => a + ", " + b));
+                table,
+                Enumerable.Range(1, width).Select(i => i.ToString()).Aggregate((a, b) => a + ", " + b));
 
             var command = new SQLiteCommand(sql, dbConnection);
-            var reader = command.ExecuteReader();
+            SQLiteDataReader reader = command.ExecuteReader();
 
-            var rowCnt = 0;
+            int rowCnt = 0;
             while (reader.Read())
             {
                 for (int columnCnt = 0; columnCnt < width; columnCnt++)
@@ -158,7 +157,7 @@ namespace BeyondCompareSqlLite.Model
         {
             string sql = String.Format("SELECT Count(*) FROM {0};", table);
             var command = new SQLiteCommand(sql, dbConnection);
-            var reader = command.ExecuteReader();
+            SQLiteDataReader reader = command.ExecuteReader();
 
             int result = 0;
             while (reader.Read())
@@ -171,12 +170,12 @@ namespace BeyondCompareSqlLite.Model
 
         private static string[,] GetTableData(string table, List<string> columnNames, SQLiteConnection dbConnection)
         {
-            var width = columnNames.Count;
-            var heigth = RowCount(table, dbConnection);
+            int width = columnNames.Count;
+            int heigth = RowCount(table, dbConnection);
 
             if (heigth == 0) return new string[0, 0];
 
-            var result = GetData(table, dbConnection, width, heigth);
+            string[,] result = GetData(table, dbConnection, width, heigth);
 
             return result;
         }
@@ -184,10 +183,10 @@ namespace BeyondCompareSqlLite.Model
         private static List<string> GetColumnName(string table, SQLiteConnection dbConnection)
         {
             string sql = String.Format("PRAGMA table_info({0});", table);
-           
+
             var command = new SQLiteCommand(sql, dbConnection);
-            var reader = command.ExecuteReader();
-            
+            SQLiteDataReader reader = command.ExecuteReader();
+
             var tables = new List<string>();
             while (reader.Read())
             {
@@ -198,6 +197,24 @@ namespace BeyondCompareSqlLite.Model
 
         #endregion
 
+        public static DatabaseContent GetTableContent(string source, List<string> tables)
+        {
+            DatabaseContent databaseContent = GetTableContent(source);
+            List<string> tablesToRemove = databaseContent.TableContent.Select(x => x.TableName).ToList();
+
+            if (tables.Contains("All")) return databaseContent;
+
+            foreach (string table in tablesToRemove)
+            {
+                TableContent tableContent = databaseContent.TableContent.FirstOrDefault(x => x.TableName == table);
+                if (tableContent == null) continue;
+                if (tables.Contains(tableContent.TableName)) continue;
+
+                databaseContent.TableContent.Remove(tableContent);
+            }
+
+            return databaseContent;
+        }
     }
 
     public class DatabaseContent
