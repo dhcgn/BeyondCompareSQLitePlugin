@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace BeyondCompareSqlLite.Model
 {
@@ -85,7 +86,7 @@ namespace BeyondCompareSqlLite.Model
         #endregion
 
 
-        public static string CreateTextReportPowershell(DatabaseContent tablesContentList)
+        public static string[] CreateTextReportPowershell(DatabaseContent tablesContentList, string path)
         {
             var sb = new StringBuilder();
             sb.AppendLine(Spacer);
@@ -116,13 +117,16 @@ namespace BeyondCompareSqlLite.Model
             }
 
             sb.AppendLine("EOF");
-            return sb.ToString();
+            string[] result = Regex.Split(sb.ToString(), "\r\n|\r|\n");
+            result = result.Select(s => path + ":" + s).ToArray();
+            return result;
         }
 
-        public static string CreateTextReport(DatabaseContent tablesContentList)
+        public static string[] CreateTextReport(DatabaseContent tablesContentList)
         {
             var report = CreateTextReportInternal(tablesContentList);
-            return report;
+            string[] result = Regex.Split(report, "\r\n|\r|\n");
+            return result;
         }
     }
 }

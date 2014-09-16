@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
 using BeyondCompareSqlLite.Model;
@@ -19,7 +21,7 @@ namespace PowershellSQLite
             HelpMessage = "Path to an SQLite file"
             )]
         [ValidateNotNullOrEmpty]
-        public string Path { get; set; }
+        public FileInfo Path { get; set; }
 
         [Parameter(
             Mandatory = false,
@@ -38,7 +40,7 @@ namespace PowershellSQLite
         {
             try
             {
-                ProcessRecordInternal();
+                ProcessRecordInternal(Path.FullName);
             }
             catch (Exception e)
             {
@@ -48,24 +50,33 @@ namespace PowershellSQLite
             base.ProcessRecord();
         }
 
-        private void ProcessRecordInternal()
+        private void ProcessRecordInternal(string path)
         {
-            DatabaseContent databaseContent = DbContext.GetTableContent(Path);
+            WriteProgress(new ProgressRecord(1,"Reading SQLite database.", "File: "+path ));
+            DatabaseContent databaseContent = DbContext.GetTableContent(path);
 
-            string output = String.Empty;
+            string[] output = new string[] {};
 
             switch (Format)
             {
                 case FormatRaw:
-                    output = Report.CreateTextReportPowershell(databaseContent);
+                    output = Report.CreateTextReportPowershell(databaseContent, path);
                     break;
                 case FormatHumanReadable:
                     output = Report.CreateTextReport(databaseContent);
                     break;
             }
 
-            string[] result = Regex.Split(output, "\r\n|\r|\n");
-            WriteObject(result, true);
+        
+            switch (Format)
+            {
+                case FormatRaw:
+                  
+                    break;
+            }
+
+            WriteProgress(new ProgressRecord(1, "Output SQLite content.", "Lines: " + output.Length));
+            WriteObject(output, true);
         }
     }
 }

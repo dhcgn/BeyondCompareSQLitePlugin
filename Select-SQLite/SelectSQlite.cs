@@ -26,7 +26,7 @@ namespace PowershellSQLite
             HelpMessage = "Path to an SQLite file"
             )]
         [ValidateNotNullOrEmpty]
-        public string Path { get; set; }
+        public FileInfo Path { get; set; }
 
         [Parameter(
             Mandatory = false,
@@ -40,30 +40,35 @@ namespace PowershellSQLite
             set { _format = value; }
         }
 
-        public string[] Tables { get; set; }
 
         public object GetDynamicParameters()
         {
-            if (!File.Exists(Path)) return null;
+            if (Path == null || !Path.Exists) return GetRuntimeDefinedParameterDictionary(null);
 
             var tableNames = new List<string>();
-            if (TablesCache.ContainsKey(Path))
+            if (TablesCache.ContainsKey(Path.FullName))
             {
-                tableNames = TablesCache[Path];
+                tableNames = TablesCache[Path.FullName];
             }
             else
             {
                 try
                 {
-                    tableNames = DbContext.GetTableNamesContent(Path);
+                    tableNames = DbContext.GetTableNamesContent(Path.FullName);
                     tableNames.Add("All");
-                    TablesCache.Add(Path, tableNames);
+                    TablesCache.Add(Path.FullName, tableNames);
                 }
                 catch (Exception e)
                 {
                 }
             }
 
+            _staticStroage = GetRuntimeDefinedParameterDictionary(tableNames);
+            return _staticStroage;
+        }
+
+        private static RuntimeDefinedParameterDictionary GetRuntimeDefinedParameterDictionary(List<string> tableNames)
+        {
             var runtimeDefinedParameterDictionary = new RuntimeDefinedParameterDictionary();
             var attributes = new Collection<Attribute>
             {
@@ -72,12 +77,14 @@ namespace PowershellSQLite
                     Position = 2,
                     HelpMessage = "Table names"
                 },
-                new ValidateSetAttribute(tableNames.ToArray()),
             };
 
+            if (tableNames != null && tableNames.Any())
+            {
+                attributes.Add(new ValidateSetAttribute(tableNames.ToArray()));
+            }
+            
             runtimeDefinedParameterDictionary.Add("Tables", new RuntimeDefinedParameter("Tables", typeof (string[]), attributes));
-            _staticStroage = runtimeDefinedParameterDictionary;
-
             return runtimeDefinedParameterDictionary;
         }
 
@@ -85,9 +92,9 @@ namespace PowershellSQLite
         {
             WriteObject("BeginProcessing");
 
-            if (!File.Exists(Path))
+            if (!Path.Exists)
             {
-                WriteError(new ErrorRecord(new FileNotFoundException("File not found", Path), "PowershellSQLite_Error:001", ErrorCategory.ObjectNotFound, Path));
+                WriteError(new ErrorRecord(new FileNotFoundException("File not found", Path.FullName), "PowershellSQLite_Error:001", ErrorCategory.ObjectNotFound, Path));
             }
 
             base.BeginProcessing();
@@ -102,24 +109,23 @@ namespace PowershellSQLite
             {
                 tables = new List<string>(runtimeDefinedParameterTables.Value.Value as string[]);
             }
+            WriteProgress(new ProgressRecord(1, "Reading SQLite database.", "File: " + Path.FullName));
 
-            DatabaseContent databaseContent = DbContext.GetTableContent(Path, tables);
+            DatabaseContent databaseContent = DbContext.GetTableContent(Path.FullName, tables);
 
-            string output = String.Empty;
+            string[] output = new string[0];
 
             switch (Format)
             {
                 case FormatRaw:
-                    output = Report.CreateTextReportPowershell(databaseContent);
+                    output = Report.CreateTextReportPowershell(databaseContent, Path.FullName);
                     break;
                 case FormatHumanReadable:
                     output = Report.CreateTextReport(databaseContent);
                     break;
             }
-
-            string[] result = Regex.Split(output, "\r\n|\r|\n");
-
-            WriteObject(result, true);
+            WriteProgress(new ProgressRecord(1, "Output SQLite content.", "Lines: " + output.Length));
+            WriteObject(output, true);
 
             base.ProcessRecord();
         }
