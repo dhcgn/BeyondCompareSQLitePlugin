@@ -8,8 +8,3 @@ My use case is to use this in Beyond Compare, so I can compare SQLlite files ver
 
 See wiki for more informations
 https://github.com/dhcgn/Beyond-Compare-SQLite-Plugin/wiki
-
-PowerShell-SQLite-Plugin
-============================
-
-A PowerShell module to search in SQLite files or export a SQLlite file to a text file.
