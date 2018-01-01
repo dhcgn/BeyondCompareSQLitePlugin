@@ -12,6 +12,8 @@ namespace BeyondCompareSQLitePlugin.Model
 {
     public class DbContext
     {
+        // Need this reference at runtime!
+        // ReSharper disable once UnusedMember.Local
         private static volatile Type dependencyProperty = typeof(SQLiteConnection);
 
         #region Public
@@ -42,7 +44,9 @@ namespace BeyondCompareSQLitePlugin.Model
                 result.TableContent = tablesContent;
 
                 result.SchemaVersion = GetSchemaVersion(connection);
-                result.UserVersion = GetUserersion(connection);
+                result.UserVersion = GetUserVersion(connection);
+
+                connection.Close();
             }
 
             return result;
@@ -55,10 +59,6 @@ namespace BeyondCompareSQLitePlugin.Model
         
         private static void Prepare()
         {
-            var temp1 = Assembly.GetEntryAssembly()?.CodeBase;
-            var temp2 = Assembly.GetExecutingAssembly()?.CodeBase;
-            var temp3 = Assembly.GetCallingAssembly()?.CodeBase;
-
             var path = new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath;
             var dir = Path.GetDirectoryName(path);
 
@@ -70,11 +70,16 @@ namespace BeyondCompareSQLitePlugin.Model
             Directory.CreateDirectory(Path.Combine(dir, "x64"));
             Directory.CreateDirectory(Path.Combine(dir, "x86"));
 
-            using (var fileStream = File.OpenWrite(Path.Combine(dir, "x64", "SQLite.Interop.dll")))
+            var fullPathx64 = Path.Combine(dir, "x64", "SQLite.Interop.dll");
+            if(!File.Exists(fullPathx64))
+            using (var fileStream = File.OpenWrite(fullPathx64))
             {
                 Assembly.GetExecutingAssembly().GetManifestResourceStream(x64).CopyTo(fileStream);
             }
-            using (var openWrite = File.OpenWrite(Path.Combine(dir, "x86", "SQLite.Interop.dll")))
+
+            var fullPathx86 = Path.Combine(dir, "x86", "SQLite.Interop.dll");
+            if (!File.Exists(fullPathx64))
+                using (var openWrite = File.OpenWrite(fullPathx86))
             {
                 Assembly.GetExecutingAssembly().GetManifestResourceStream(x86).CopyTo(openWrite);
             }
@@ -119,7 +124,7 @@ namespace BeyondCompareSQLitePlugin.Model
             return result;
         }
 
-        private static int GetUserersion(SQLiteConnection dbConnection)
+        private static int GetUserVersion(SQLiteConnection dbConnection)
         {
             string sql = "PRAGMA user_version;";
             var command = new SQLiteCommand(sql, dbConnection);

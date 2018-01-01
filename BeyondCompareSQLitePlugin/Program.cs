@@ -22,7 +22,7 @@ namespace BeyondCompareSQLitePlugin
             if (args == null || args.Length != 2)
             {
                 ConsoleHelper.PrintHelp();
-                return (ErrorBadArguments);
+                return ErrorBadArguments;
             }
 
             string source = args[0];
@@ -31,7 +31,7 @@ namespace BeyondCompareSQLitePlugin
             if (!File.Exists(source))
             {
                 ConsoleHelper.PrintFileDoesntExists(source);
-                return (ErrorFileDoesntExists);
+                return ErrorFileDoesntExists;
             }
 
             try
@@ -44,7 +44,7 @@ namespace BeyondCompareSQLitePlugin
             {
                 File.WriteAllText(target, e.ToString());
                 Console.Out.WriteLine("Error ocurred: " + e);
-                return (ErrorUnknown);
+                return ErrorUnknown;
             }
         }
     }
