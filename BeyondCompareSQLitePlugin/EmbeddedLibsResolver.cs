@@ -18,13 +18,11 @@ namespace BeyondCompareSQLitePlugin
             foreach (var resource in resources)
             {
                 using (var stream = executingAssembly.GetManifestResourceStream(resource))
+                using (var memstream = new MemoryStream())
                 {
-                    using (var memstream = new MemoryStream())
-                    {
-                        stream.CopyTo(memstream);
+                    stream.CopyTo(memstream);
 
-                        assemblies.Add(resource, Assembly.Load(memstream.ToArray()));
-                    }
+                    assemblies.Add(resource, Assembly.Load(memstream.ToArray()));
                 }
             }
 

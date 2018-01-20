@@ -78,7 +78,7 @@ namespace BeyondCompareSQLitePlugin.Model
             }
 
             var fullPathx86 = Path.Combine(dir, "x86", "SQLite.Interop.dll");
-            if (!File.Exists(fullPathx64))
+            if (!File.Exists(fullPathx86))
                 using (var openWrite = File.OpenWrite(fullPathx86))
             {
                 Assembly.GetExecutingAssembly().GetManifestResourceStream(x86).CopyTo(openWrite);
