@@ -9,6 +9,7 @@ namespace BeyondCompareSQLitePlugin.Model.Test
         [Test]
         [TestCase(SampleSqlite, 15688)]
         [TestCase(SampleSqliteSecond, 15689)]
+        [TestCase(EmptySqlite, 15)]
         public void CreateTextReport_String(string name, int length)
         {
             #region Arrange
@@ -34,6 +35,7 @@ namespace BeyondCompareSQLitePlugin.Model.Test
         [Test]
         [TestCase(SampleSqlite, 1_939_768)]
         [TestCase(SampleSqliteSecond, 1_933_376)]
+        [TestCase(EmptySqlite, 871)]
         public void CreateTextReport_File(string name, int length)
         {
             #region Arrange

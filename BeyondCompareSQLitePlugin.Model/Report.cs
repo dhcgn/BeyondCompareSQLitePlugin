@@ -60,7 +60,7 @@ namespace BeyondCompareSQLitePlugin.Model
         private static void CreateTablesSummary(List<TableContent> tablesContentList, StringBuilder sb)
         {
             var tables = tablesContentList.Select(x => x.TableName);
-            var maxWidth = tables.Select(x => x.Length).OrderByDescending(x => x).First();
+            var maxWidth = tables.Select(x => x.Length).OrderByDescending(x => x).FirstOrDefault();
 
             sb.AppendLine(string.Format("{0}|{1,10}|{2,10}|{3,36}", "table".PadRight(maxWidth), "columns", "rows", "schema hash"));
             sb.AppendLine();
