@@ -48,8 +48,13 @@ namespace BeyondCompareSQLitePlugin.Model.Test
         {
             var name = Assembly.GetExecutingAssembly().GetManifestResourceNames()
                 .FirstOrDefault(x => x.EndsWith(filename));
+            var sqlFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory, filename);
+
+            if (File.Exists(sqlFilePath))
+                return;
+
             using (Stream input = Assembly.GetExecutingAssembly().GetManifestResourceStream(name))
-            using (Stream output = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, filename)))
+            using (Stream output = File.Create(sqlFilePath))
             {
                 CopyStream(input, output);
             }

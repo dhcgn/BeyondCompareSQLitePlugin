@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using NUnit.Framework;
 
 namespace BeyondCompareSQLitePlugin.Test
@@ -9,8 +10,12 @@ namespace BeyondCompareSQLitePlugin.Test
         [Test]
         public void Process_Start()
         {
-            Program.Main(new[] { base.SampleSqlitePath, "sampleSqlite.txt" });
-            Process.Start("sampleSqlite.txt");
+            var returnCode = Program.Main(new[] { base.SampleSqlitePath, "sampleSqlite.txt" });
+
+            // Process.Start("sampleSqlite.txt");
+
+            Assert.That(returnCode, Is.EqualTo(Program.Ok), "Return Code");
+            Assert.That(File.ReadAllText("sampleSqlite.txt"), Does.Not.Contain("Exception"));
         }
     }
 }

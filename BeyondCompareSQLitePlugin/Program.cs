@@ -6,9 +6,10 @@ namespace BeyondCompareSQLitePlugin
 {
     public class Program
     {
-        private const int ErrorBadArguments = -0x1;
-        private const int ErrorFileDoesntExists = -0x2;
-        private const int ErrorUnknown = -0x3;
+        internal const int Ok = 0x0;
+        internal const int ErrorBadArguments = -0x1;
+        internal const int ErrorFileDoesntExists = -0x2;
+        internal const int ErrorUnknown = -0x3;
 
         public static int Main(string[] args)
         {
@@ -38,7 +39,7 @@ namespace BeyondCompareSQLitePlugin
             {
                 var databaseContent = DbContext.GetTableContent(source);
                 Report.CreateTextReport(databaseContent, target);
-                return 0;
+                return Ok;
             }
             catch (Exception e)
             {

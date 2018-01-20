@@ -85,43 +85,6 @@ namespace BeyondCompareSQLitePlugin.Model
 
         #endregion
 
-
-        public static string[] CreateTextReportPowershell(DatabaseContent tablesContentList, string path)
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine(Spacer);
-            sb.AppendLine("DataBase overview");
-            sb.AppendLine(Spacer);
-            sb.AppendFormat("SchemaVersion: {0,10}{1}", tablesContentList.SchemaVersion, Environment.NewLine);
-            sb.AppendFormat("UserVersion:   {0,10}{1}", tablesContentList.UserVersion, Environment.NewLine);
-
-            sb.AppendLine(Spacer);
-            sb.AppendLine("Tables overview");
-            sb.AppendLine(Spacer);
-
-            CreateTablesSummary(tablesContentList.TableContent, sb);
-
-            //sb.AppendLine(Spacer);
-            //sb.AppendLine("Schema");
-            //sb.AppendLine(Spacer);
-
-            // Todo Schema
-
-            sb.AppendLine(Spacer);
-            sb.AppendLine("Content");
-            sb.AppendLine(Spacer);
-
-            foreach (var tablesContent in tablesContentList.TableContent)
-            {
-                sb.AppendLine(tablesContent.GetReportPowerShell());
-            }
-
-            sb.AppendLine("EOF");
-            string[] result = Regex.Split(sb.ToString(), "\r\n|\r|\n");
-            result = result.Select(s => path + ":" + s).ToArray();
-            return result;
-        }
-
         public static string[] CreateTextReport(DatabaseContent tablesContentList)
         {
             var report = CreateTextReportInternal(tablesContentList);
