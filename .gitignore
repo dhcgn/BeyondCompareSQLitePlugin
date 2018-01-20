@@ -156,3 +156,5 @@ $RECYCLE.BIN/
 .DS_Store
 /packages/NUnit.3.5.0
 /.vs/BeyondCompareSQLitePlugin/v15/Server/sqlite3
+
+packages/
