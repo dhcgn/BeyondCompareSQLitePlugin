@@ -62,6 +62,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <EmbeddedResource Include="TestData\empty.sqlite" />
+    <EmbeddedResource Include="TestData\Chinook_Sqlite_escape_needed.sqlite" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

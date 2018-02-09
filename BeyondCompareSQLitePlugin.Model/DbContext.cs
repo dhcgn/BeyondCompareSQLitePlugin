@@ -157,7 +157,7 @@ namespace BeyondCompareSQLitePlugin.Model
 
         private static string GetTableSchemaHash(string table, SQLiteConnection dbConnection)
         {
-            string sql = String.Format("PRAGMA table_info({0});", table);
+            string sql = String.Format("PRAGMA table_info('{0}');", table);
 
             var command = new SQLiteCommand(sql, dbConnection);
             SQLiteDataReader reader = command.ExecuteReader();
@@ -182,7 +182,7 @@ namespace BeyondCompareSQLitePlugin.Model
         {
             var result = new string[width, hight];
 
-            string sql = String.Format("SELECT * FROM {0} ORDER BY {1};",
+            string sql = String.Format("SELECT * FROM '{0}' ORDER BY {1};",
                 table,
                 Enumerable.Range(1, width).Select(i => i.ToString()).Aggregate((a, b) => a + ", " + b));
 
@@ -204,7 +204,7 @@ namespace BeyondCompareSQLitePlugin.Model
 
         private static int RowCount(string table, SQLiteConnection dbConnection)
         {
-            string sql = String.Format("SELECT Count(*) FROM {0};", table);
+            string sql = String.Format("SELECT Count(*) FROM '{0}';", table);
             var command = new SQLiteCommand(sql, dbConnection);
             SQLiteDataReader reader = command.ExecuteReader();
 
@@ -231,7 +231,7 @@ namespace BeyondCompareSQLitePlugin.Model
 
         private static List<string> GetColumnName(string table, SQLiteConnection dbConnection)
         {
-            string sql = String.Format("PRAGMA table_info({0});", table);
+            string sql = String.Format("PRAGMA table_info('{0}');", table);
 
             var command = new SQLiteCommand(sql, dbConnection);
             SQLiteDataReader reader = command.ExecuteReader();

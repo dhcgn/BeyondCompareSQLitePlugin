@@ -9,6 +9,7 @@ namespace BeyondCompareSQLitePlugin.Model.Test
     {
         internal const string SampleSqlite = "Chinook_Sqlite.sqlite";
         internal const string SampleSqliteSecond = "Chinook_Sqlite_second.sqlite";
+        internal const string SampleSqliteEscapeNeeded = "Chinook_Sqlite_escape_needed.sqlite";
         internal const string EmptySqlite = "empty.sqlite";
 
         private string SampleSqlitePath => Path.Combine(TestContext.CurrentContext.TestDirectory, SampleSqlite);
@@ -21,6 +22,7 @@ namespace BeyondCompareSQLitePlugin.Model.Test
         {
             WriteSqlLiteDatabaseToDisk(SampleSqlite);
             WriteSqlLiteDatabaseToDisk(SampleSqliteSecond);
+            WriteSqlLiteDatabaseToDisk(SampleSqliteEscapeNeeded);
             WriteSqlLiteDatabaseToDisk(EmptySqlite);
         }
 
@@ -29,6 +31,7 @@ namespace BeyondCompareSQLitePlugin.Model.Test
         {
             DeleteFromDisk(SampleSqlite);
             DeleteFromDisk(SampleSqliteSecond);
+            DeleteFromDisk(SampleSqliteEscapeNeeded);
             DeleteFromDisk(EmptySqlite);
         }
 
