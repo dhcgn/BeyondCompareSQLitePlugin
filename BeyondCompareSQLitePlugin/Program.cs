@@ -20,7 +20,7 @@ namespace BeyondCompareSQLitePlugin
         private static int MainInternal(string[] args)
         {
             ConsoleHelper.PrintIntro();
-            if (args == null || args.Length != 2)
+            if (args == null || (args.Length != 2 && args.Length != 3))
             {
                 ConsoleHelper.PrintHelp();
                 return ErrorBadArguments;
@@ -28,6 +28,10 @@ namespace BeyondCompareSQLitePlugin
 
             string source = args[0];
             string target = args[1];
+
+            bool listContents = false;
+
+            if (args.Length > 2) listContents = args[2]?.ToLower().TrimStart('/') != "schema";
 
             if (!File.Exists(source))
             {
@@ -38,7 +42,7 @@ namespace BeyondCompareSQLitePlugin
             try
             {
                 var databaseContent = DbContext.GetTableContent(source);
-                Report.CreateTextReport(databaseContent, target);
+                Report.CreateTextReport(databaseContent, target, listContents);
                 return Ok;
             }
             catch (Exception e)
