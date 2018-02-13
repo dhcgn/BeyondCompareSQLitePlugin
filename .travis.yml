@@ -6,5 +6,5 @@ before_install:
 before_script:
   - nuget restore BeyondCompareSQLitePlugin.sln
 after_script:
-  - nunit-console BeyondCompareSQLitePlugin.Model.Test\bin\Debug\BeyondCompareSQLitePlugin.Model.Test.dll
-  - nunit-console BeyondCompareSQLitePlugin.Test\bin\Debug\BeyondCompareSQLitePlugin.Test.dll
+  - nunit-console BeyondCompareSQLitePlugin.Model.Test/bin/Debug/BeyondCompareSQLitePlugin.Model.Test.dll
+  - nunit-console BeyondCompareSQLitePlugin.Test/bin/Debug/BeyondCompareSQLitePlugin.Test.dll
