@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
@@ -7,14 +8,14 @@ namespace BeyondCompareSQLitePlugin.Model.Test
 {
     public class TestBase
     {
-        internal const string SampleSqlite = "Chinook_Sqlite.sqlite";
-        internal const string SampleSqliteSecond = "Chinook_Sqlite_second.sqlite";
-        internal const string SampleSqliteEscapeNeeded = "Chinook_Sqlite_escape_needed.sqlite";
-        internal const string EmptySqlite = "empty.sqlite";
+        internal const String SampleSqlite = "Chinook_Sqlite.sqlite";
+        internal const String SampleSqliteSecond = "Chinook_Sqlite_second.sqlite";
+        internal const String SampleSqliteEscapeNeeded = "Chinook_Sqlite_escape_needed.sqlite";
+        internal const String EmptySqlite = "empty.sqlite";
 
-        private string SampleSqlitePath => Path.Combine(TestContext.CurrentContext.TestDirectory, SampleSqlite);
+        private String SampleSqlitePath => Path.Combine(TestContext.CurrentContext.TestDirectory, SampleSqlite);
 
-        private string SampleSqliteSecondPath =>
+        private String SampleSqliteSecondPath =>
             Path.Combine(TestContext.CurrentContext.TestDirectory, SampleSqliteSecond);
 
         [OneTimeSetUp]
@@ -35,7 +36,7 @@ namespace BeyondCompareSQLitePlugin.Model.Test
             DeleteFromDisk(EmptySqlite);
         }
 
-        public string TestFile1 => Path.Combine(TestContext.CurrentContext.TestDirectory, "testfile_1");
+        public String TestFile1 => Path.Combine(TestContext.CurrentContext.TestDirectory, "testfile_1");
 
         [TearDown]
         public void TearDown()
@@ -44,13 +45,13 @@ namespace BeyondCompareSQLitePlugin.Model.Test
                 File.Delete(TestFile1);
         }
 
-        private void DeleteFromDisk(string filename)
+        private void DeleteFromDisk(String filename)
         {
             if (File.Exists(filename))
                 File.Delete(filename);
         }
 
-        private static void WriteSqlLiteDatabaseToDisk(string filename)
+        private static void WriteSqlLiteDatabaseToDisk(String filename)
         {
             var name = Assembly.GetExecutingAssembly().GetManifestResourceNames()
                 .FirstOrDefault(x => x.EndsWith(filename));
@@ -69,9 +70,9 @@ namespace BeyondCompareSQLitePlugin.Model.Test
         public static void CopyStream(Stream input, Stream output)
         {
             // Insert null checking here for production
-            byte[] buffer = new byte[8192];
+            Byte[] buffer = new Byte[8192];
 
-            int bytesRead;
+            Int32 bytesRead;
             while ((bytesRead = input.Read(buffer, 0, buffer.Length)) > 0)
             {
                 output.Write(buffer, 0, bytesRead);

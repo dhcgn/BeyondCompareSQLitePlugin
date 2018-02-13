@@ -13,22 +13,21 @@ namespace BeyondCompareSQLitePlugin.Model.Test
     public class DbContextTest : TestBase
     {
         [Test]
-        [TestCase(SampleSqlite, 32, 0, 11, "Album", "da49fafbba60b375030169ab9bc1ce05", 3)]
-        [TestCase(SampleSqliteSecond, 54, 0, 11, "Album", "d25b1472de06f98e260f74d63e1f6c41", 3)]
-        public void GetTableContent(string name, int schemaVersion, int userVersion, int tableContentCount,
-            string firstTablename, string firstSchemaHash, int firstColumnCount)
+        [TestCase(SampleSqlite, 32, 0, 11, "Album", "fRwEEcT38Y5KiIDHcY0ucuRvhugvQWddyXMkX4Y8gDM=", 3)]
+        [TestCase(SampleSqliteSecond, 54, 0, 11, "Album", "0ScP8ubkLHfxjIKhMaTGKeHrOFgZOCV6tHKaO3uFFHk=", 3)]
+        public void GetTableContent(String name, Int32 schemaVersion, Int32 userVersion, Int32 tableContentCount,
+            String firstTablename, String firstSchemaHash, Int32 firstColumnCount)
         {
             #region Arrange
 
-            string path = Path.Combine(TestContext.CurrentContext.TestDirectory, name);
+            String path = Path.Combine(TestContext.CurrentContext.TestDirectory, name);
 
             #endregion
 
             #region Act
 
-            var databaseContent = DbContext.GetTableContent(path);
+            var databaseContent = DbReader.CreateSummary(path);
             
-
             #endregion
 
             #region Assert
@@ -37,12 +36,12 @@ namespace BeyondCompareSQLitePlugin.Model.Test
                 nameof(databaseContent.SchemaVersion));
             Assert.That(databaseContent.UserVersion, Is.EqualTo(userVersion),
                 nameof(databaseContent.UserVersion));
-            Assert.That(databaseContent.TableContent, Has.Count.EqualTo(tableContentCount),
-                nameof(databaseContent.TableContent));
+            Assert.That(databaseContent.Tables, Has.Count.EqualTo(tableContentCount),
+                nameof(databaseContent.Tables));
 
-            Assert.That(databaseContent.TableContent[0].TableName, Is.EqualTo(firstTablename));
-            Assert.That(databaseContent.TableContent[0].SchemaHash, Is.EqualTo(firstSchemaHash));
-            Assert.That(databaseContent.TableContent[0].ColumnNames, Has.Count.EqualTo(firstColumnCount));
+            Assert.That(databaseContent.Tables[0].TableName, Is.EqualTo(firstTablename));
+            Assert.That(databaseContent.Tables[0].SchemaHash, Is.EqualTo(firstSchemaHash));
+            Assert.That(databaseContent.Tables[0].ColumnNames, Has.Count.EqualTo(firstColumnCount));
 
             #endregion
         }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using NUnit.Framework;
 
 namespace BeyondCompareSQLitePlugin.Model.Test
@@ -7,49 +8,85 @@ namespace BeyondCompareSQLitePlugin.Model.Test
     public class ReportTest : TestBase
     {
         [Test]
-        [TestCase(SampleSqlite, 15_688)]
-        [TestCase(SampleSqliteSecond, 15_689)]
-        [TestCase(EmptySqlite, 15)]
-        [TestCase(SampleSqliteEscapeNeeded, 15_688)]
-        public void CreateTextReport_String(string name, int length)
+        [TestCase(SampleSqlite, 15_688, true)]
+        [TestCase(SampleSqliteSecond, 15_689, true)]
+        [TestCase(SampleSqliteEscapeNeeded, 15_688, true)]
+
+        [TestCase(SampleSqlite, 37, false)]
+        [TestCase(SampleSqliteSecond, 37, false)]
+        [TestCase(SampleSqliteEscapeNeeded, 37, false)]
+        public void CreateSummary_CreateTextReport(String name, Int32 lines, bool containsData)
         {
             #region Arrange
 
-            string path = Path.Combine(TestContext.CurrentContext.TestDirectory, name);
+            String path = Path.Combine(TestContext.CurrentContext.TestDirectory, name);
 
             #endregion
 
             #region Act
 
-            var databaseContent = DbContext.GetTableContent(path);
-            var stringContent = Report.CreateTextReport(databaseContent);
+            var databaseContent = DbReader.CreateSummary(path);
+            var stringContent = Report.CreateTextReport(databaseContent, containsData);
 
             #endregion
 
             #region Assert
 
-            Assert.That(stringContent, Has.Length.EqualTo(length));
+            Assert.That(stringContent.Split('\n'), Has.Length.EqualTo(lines));
+
+            if (containsData)
+            {
+                Assert.That(stringContent, Does.Contain("For Those About To Rock We Salute You"));
+            }
+            else
+            {
+                Assert.That(stringContent, Does.Not.Contain("For Those About To Rock We Salute You"));
+            }
 
             #endregion
         }
 
         [Test]
-        [TestCase(SampleSqlite, 1_939_768)]
-        [TestCase(SampleSqliteSecond, 1_933_376)]
-        [TestCase(EmptySqlite, 871)]
-        [TestCase(SampleSqliteEscapeNeeded, 1_940_165)]
-        public void CreateTextReport_File(string name, int length)
+        [TestCase(EmptySqlite, 15, false)]
+        public void CreateSummary_CreateTextReport_EmptyDb(String name, Int32 lines, bool containsData)
         {
             #region Arrange
 
-            string path = Path.Combine(TestContext.CurrentContext.TestDirectory, name);
+            String path = Path.Combine(TestContext.CurrentContext.TestDirectory, name);
 
             #endregion
 
             #region Act
 
-            var databaseContent = DbContext.GetTableContent(path);
-            Report.CreateTextReport(databaseContent, TestFile1);
+            var databaseContent = DbReader.CreateSummary(path);
+            var stringContent = Report.CreateTextReport(databaseContent, containsData);
+
+            #endregion
+
+            #region Assert
+
+            Assert.That(stringContent.Split('\n'), Has.Length.EqualTo(lines));
+
+            #endregion
+        }
+
+        [Test]
+        [TestCase(SampleSqlite, 1_939_856)]
+        [TestCase(SampleSqliteSecond, 1_933_464)]
+        [TestCase(EmptySqlite, 871)]
+        [TestCase(SampleSqliteEscapeNeeded, 1_940_253)]
+        public void CreateSummary_WriteTextReportToFile(String name, Int32 length)
+        {
+            #region Arrange
+
+            String path = Path.Combine(TestContext.CurrentContext.TestDirectory, name);
+
+            #endregion
+
+            #region Act
+
+            var databaseContent = DbReader.CreateSummary(path);
+            Report.WriteTextReportToFile(databaseContent, TestFile1);
 
             #endregion
 

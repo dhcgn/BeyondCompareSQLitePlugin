@@ -10,7 +10,7 @@ namespace BeyondCompareSQLitePlugin
     {
         public static void Init()
         {
-            var assemblies = new Dictionary<string, Assembly>();
+            var assemblies = new Dictionary<String, Assembly>();
             var executingAssembly = Assembly.GetExecutingAssembly();
             var resources = executingAssembly.GetManifestResourceNames()
                 .Where(n => n.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase));
