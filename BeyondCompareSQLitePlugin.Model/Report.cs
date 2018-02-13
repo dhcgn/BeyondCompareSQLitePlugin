@@ -9,69 +9,69 @@ namespace BeyondCompareSQLitePlugin.Model
 {
     public class Report
     {
-        private const string Spacer = "##################################################################################################################";
+        private static readonly String Spacer = new String('#', 114);
 
         #region Public
 
-        public static void CreateTextReport(DatabaseContent tablesContentList, string target, bool listContents = true)
+        public static void WriteTextReportToFile(DatabaseSummary tablesSummaryList, String path, Boolean containsData = true)
         {
-            var sb = CreateTextReportInternal(tablesContentList,  listContents);
-            File.WriteAllText(target, sb, Encoding.UTF8);
+            var sb = CreateTextReportInternal(tablesSummaryList, containsData);
+            File.WriteAllText(path, sb, Encoding.UTF8);
         }
 
-        private static string CreateTextReportInternal(DatabaseContent tablesContentList, bool listContents = true)
+        public static String CreateTextReport(DatabaseSummary tablesSummaryList, Boolean containsData = true)
         {
-            var sb = new StringBuilder();
-            sb.AppendLine(Spacer);
-            sb.AppendLine("DataBase overview");
-            sb.AppendLine(Spacer);
-            sb.AppendFormat("SchemaVersion: {0,10}{1}", tablesContentList.SchemaVersion, Environment.NewLine);
-            sb.AppendFormat("UserVersion:   {0,10}{1}", tablesContentList.UserVersion, Environment.NewLine);
-
-            sb.AppendLine(Spacer);
-            sb.AppendLine("Tables overview");
-            sb.AppendLine(Spacer);
-
-            CreateTablesSummary(tablesContentList.TableContent, sb);
-
-            //sb.AppendLine(Spacer);
-            //sb.AppendLine("Schema");
-            //sb.AppendLine(Spacer);
-
-            // Todo Schema
-
-            sb.AppendLine(Spacer);
-            sb.AppendLine("Content");
-            sb.AppendLine(Spacer);
-
-            foreach (var tablesContent in tablesContentList.TableContent)
-            {
-                sb.AppendLine(tablesContent.GetReport(listContents));
-            }
-
-            sb.AppendLine("EOF");
-            return sb.ToString();
+            var report = CreateTextReportInternal(tablesSummaryList, containsData);
+            return report;
         }
 
         #endregion
 
         #region Private
 
-        private static void CreateTablesSummary(List<TableContent> tablesContentList, StringBuilder sb)
+        private static String CreateTextReportInternal(DatabaseSummary tablesSummaryList, Boolean containsData = true)
         {
-            var tables = tablesContentList.Select(x => x.TableName);
-            var maxWidth = tables.Select(x => x.Length).OrderByDescending(x => x).FirstOrDefault();
+            var sb = new StringBuilder();
+            sb.AppendLine(Spacer);
+            sb.AppendLine("DataBase overview");
+            sb.AppendLine(Spacer);
+            sb.AppendFormat("SchemaVersion: {0,10}{1}", tablesSummaryList.SchemaVersion, Environment.NewLine);
+            sb.AppendFormat("UserVersion:   {0,10}{1}", tablesSummaryList.UserVersion, Environment.NewLine);
 
-            sb.AppendLine(string.Format("{0}|{1,10}|{2,10}|{3,36}", "table".PadRight(maxWidth), "columns", "rows", "schema hash"));
+            sb.AppendLine(Spacer);
+            sb.AppendLine("Tables overview");
+            sb.AppendLine(Spacer);
+
+            AppendTablesToStringBuilder(tablesSummaryList.Tables, sb);
+
+            sb.AppendLine(Spacer);
+            sb.AppendLine("Content");
+            sb.AppendLine(Spacer);
+
+            foreach (var tableSummary in tablesSummaryList.Tables)
+            {
+                sb.AppendLine(tableSummary.GetTextOutput(containsData));
+            }
+
+            sb.AppendLine("EOF");
+            return sb.ToString();
+        }
+
+        private static void AppendTablesToStringBuilder(List<TableSummary> tableSummaries, StringBuilder sb)
+        {
+            var tables = tableSummaries.Select(ts => ts.TableName);
+            var maxWidth = tables.Select(n => n.Length).OrderByDescending(l => l).FirstOrDefault();
+
+            sb.AppendLine(String.Format("{0}|{1,10}|{2,10}|{3,36}", "table".PadRight(maxWidth), "columns", "rows", "schema hash"));
             sb.AppendLine();
 
             foreach (var table in tables)
             {
-                int rows = 0;
-                int columns = 0;
-                string schemaHash = null;
+                Int32 rows = 0;
+                Int32 columns = 0;
+                String schemaHash = null;
 
-                var tableContent = tablesContentList.FirstOrDefault(x => x.TableName == table);
+                var tableContent = tableSummaries.FirstOrDefault(x => x.TableName == table);
                 if (tableContent != null)
                 {
                     columns = tableContent.Data.GetLength(0);
@@ -79,17 +79,11 @@ namespace BeyondCompareSQLitePlugin.Model
                     schemaHash = tableContent.SchemaHash;
                 }
 
-                sb.AppendLine(string.Format("{0}|{1,10}|{2,10}|{3,36}", table.PadRight(maxWidth), columns, rows, schemaHash));
+                sb.AppendLine(String.Format("{0}|{1,10}|{2,10}|{3,36}", table.PadRight(maxWidth), columns, rows, schemaHash));
             }
         }
 
         #endregion
 
-        public static string[] CreateTextReport(DatabaseContent tablesContentList)
-        {
-            var report = CreateTextReportInternal(tablesContentList);
-            string[] result = Regex.Split(report, "\r\n|\r|\n");
-            return result;
-        }
     }
 }

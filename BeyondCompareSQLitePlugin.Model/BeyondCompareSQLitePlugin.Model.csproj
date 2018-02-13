@@ -59,8 +59,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Report.cs" />
-    <Compile Include="TableContent.cs" />
-    <Compile Include="DbContext.cs" />
+    <Compile Include="TableSummary.cs" />
+    <Compile Include="DbReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
