@@ -1,2 +1,10 @@
 language: csharp
-solution: BeyondCompareSQLitePlugin.sln
+script:
+  - xbuild /p:Configuration=Debug BeyondCompareSQLitePlugin.sln
+before_install:
+  - sudo apt-get install nunit-console
+before_script:
+  - nuget restore BeyondCompareSQLitePlugin.sln
+after_script:
+  - nunit-console BeyondCompareSQLitePlugin.Model.Test\bin\Debug\BeyondCompareSQLitePlugin.Model.Test.dll
+  - nunit-console BeyondCompareSQLitePlugin.Test\bin\Debug\BeyondCompareSQLitePlugin.Test.dll
