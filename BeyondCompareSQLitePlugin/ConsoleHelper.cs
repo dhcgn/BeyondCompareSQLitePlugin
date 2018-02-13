@@ -13,14 +13,15 @@ namespace BeyondCompareSQLitePlugin
 
         public static void PrintHelp()
         {
-            Console.Out.WriteLine("Please input two argumments.");
-            Console.Out.WriteLine("1. argumment - source file (SQLite file");
-            Console.Out.WriteLine("2. argumment - destination file (text file, will be overridden)");
+            Console.Out.WriteLine("Please input two (or three) arguments.");
+            Console.Out.WriteLine("1. argument - source file (SQLite file");
+            Console.Out.WriteLine("2. argument - destination file (text file, will be overwritten)");
+            Console.Out.WriteLine("3. argument - schema (only writes the schema, no data)");
         }
 
         public static void PrintFileDoesntExists(string source)
         {
-            Console.Out.WriteLine("File \"{0}\" doens't exists.", source);
+            Console.Out.WriteLine("File \"{0}\" doesn't exist.", source);
         }
     }
 }

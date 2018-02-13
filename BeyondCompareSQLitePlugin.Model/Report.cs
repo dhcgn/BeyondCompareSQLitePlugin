@@ -13,13 +13,13 @@ namespace BeyondCompareSQLitePlugin.Model
 
         #region Public
 
-        public static void CreateTextReport(DatabaseContent tablesContentList, string target)
+        public static void CreateTextReport(DatabaseContent tablesContentList, string target, bool listContents = true)
         {
-            var sb = CreateTextReportInternal(tablesContentList);
+            var sb = CreateTextReportInternal(tablesContentList,  listContents);
             File.WriteAllText(target, sb, Encoding.UTF8);
         }
 
-        private static string CreateTextReportInternal(DatabaseContent tablesContentList)
+        private static string CreateTextReportInternal(DatabaseContent tablesContentList, bool listContents = true)
         {
             var sb = new StringBuilder();
             sb.AppendLine(Spacer);
@@ -46,7 +46,7 @@ namespace BeyondCompareSQLitePlugin.Model
 
             foreach (var tablesContent in tablesContentList.TableContent)
             {
-                sb.AppendLine(tablesContent.GetReport());
+                sb.AppendLine(tablesContent.GetReport(listContents));
             }
 
             sb.AppendLine("EOF");

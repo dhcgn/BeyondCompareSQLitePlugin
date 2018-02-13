@@ -31,7 +31,7 @@ namespace BeyondCompareSQLitePlugin.Model
 
         #region Public
 
-        public string GetReport()
+        public string GetReport(bool listContents = true)
         {
             var sb = new StringBuilder();
             sb.AppendLine(Spacer);
@@ -48,7 +48,7 @@ namespace BeyondCompareSQLitePlugin.Model
 
             sb.Append(Environment.NewLine);
 
-            if (Data.Length == 0) return sb.ToString();
+            if (Data.Length == 0 || !listContents) return sb.ToString();
 
             var i1 = Data.GetLength(1);
             for (int i = 0; i < i1; i++)
