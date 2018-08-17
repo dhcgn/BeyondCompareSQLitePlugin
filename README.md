@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dhcgn/BeyondCompareSQLitePlugin.svg?branch=master)](https://travis-ci.org/dhcgn/BeyondCompareSQLitePlugin)
+
 Beyond-Compare-SQLite-Plugin
 ============================
 
