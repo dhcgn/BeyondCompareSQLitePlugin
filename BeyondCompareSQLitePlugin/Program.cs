@@ -14,6 +14,14 @@ namespace BeyondCompareSQLitePlugin
         internal const Int32 ErrorNoSqlLiteHeader = -0x3;
         internal const Int32 ErrorUnknown = -0x4;
 
+        /// <summary>
+        /// Please input two (or three) arguments.
+        /// 1. argument - source file (SQLite file)
+        /// 2. argument - destination file (text file, will be overwritten)
+        /// 3. argument - optional switch '/schema' (only writes the schema, no data)
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static Int32 Main(String[] args)
         {
             EmbeddedLibsResolver.Init();
@@ -65,12 +73,12 @@ namespace BeyondCompareSQLitePlugin
         private static Boolean IsSqlLiteFile(String path)
         {
             byte[] buffer = new byte[16];
-            
-                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read,FileShare.ReadWrite))
-                {
-                    fs.Read(buffer, 0, buffer.Length);
-                    fs.Close();
-                }
+
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                fs.Read(buffer, 0, buffer.Length);
+                fs.Close();
+            }
 
             var fileHeader = Encoding.UTF8.GetString(buffer);
             return fileHeader == "SQLite format 3\0";

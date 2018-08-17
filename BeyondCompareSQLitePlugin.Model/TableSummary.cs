@@ -13,7 +13,7 @@ namespace BeyondCompareSQLitePlugin.Model
 
         public TableSummary(String table)
         {
-            TableName = table;
+            this.TableName = table;
         }
 
         #endregion
@@ -35,15 +35,15 @@ namespace BeyondCompareSQLitePlugin.Model
         {
             if (!printData)
             {
-                return $"Table: {TableName}";
+                return $"Table: {this.TableName}";
             }
 
             var sb = new StringBuilder();
             sb.AppendLine(Spacer);
-            sb.AppendLine("Table: " + TableName);
+            sb.AppendLine("Table: " + this.TableName);
             sb.AppendLine(Spacer);
 
-            List<Tuple<String, Int32>> colmnWidths = GetColumnMaxWidths();
+            List<Tuple<String, Int32>> colmnWidths = this.GetColumnMaxWidths();
 
             foreach (var columnName in this.ColumnNames)
             {
@@ -53,17 +53,17 @@ namespace BeyondCompareSQLitePlugin.Model
 
             sb.Append(Environment.NewLine);
 
-            if (Data.Length == 0 || !printData) return sb.ToString();
+            if (this.Data.Length == 0 || !printData) return sb.ToString();
 
-            var i1 = Data.GetLength(1);
+            var i1 = this.Data.GetLength(1);
             for (Int32 i = 0; i < i1; i++)
             {
                 sb.Append(Environment.NewLine);
                 var colCnt = 0;
-                foreach (var columnName in ColumnNames)
+                foreach (var columnName in this.ColumnNames)
                 {
                     var totalWidth = colmnWidths.First(x => x.Item1 == columnName).Item2;
-                    var s = Data[colCnt, i];
+                    var s = this.Data[colCnt, i];
                     if (String.IsNullOrWhiteSpace(s))
                         s = "-";
                     sb.Append(s.PadRight(totalWidth) + "| ");
@@ -87,9 +87,9 @@ namespace BeyondCompareSQLitePlugin.Model
             foreach (var columnName in this.ColumnNames)
             {
                 var maxWidth = columnName.Length;
-                for (Int32 i = 0; i < Data.GetLength(1); i++)
+                for (Int32 i = 0; i < this.Data.GetLength(1); i++)
                 {
-                    var length = Data[colnCnt, i].Length;
+                    var length = this.Data[colnCnt, i].Length;
                     if (maxWidth < length)
                         maxWidth = length;
                 }

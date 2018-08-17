@@ -82,8 +82,8 @@ namespace BeyondCompareSQLitePlugin.Model
 
             Int32 wsize = IntPtr.Size;
             String libdir = (wsize == 4) ? "x86" : "x64";
-            String appPath = System.IO.Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
-            SetDllDirectory(System.IO.Path.Combine(appPath, libdir));
+            String appPath = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+            SetDllDirectory(Path.Combine(appPath, libdir));
         }
 
         #endregion

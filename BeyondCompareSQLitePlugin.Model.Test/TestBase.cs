@@ -30,10 +30,10 @@ namespace BeyondCompareSQLitePlugin.Model.Test
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            DeleteFromDisk(SampleSqlite);
-            DeleteFromDisk(SampleSqliteSecond);
-            DeleteFromDisk(SampleSqliteEscapeNeeded);
-            DeleteFromDisk(EmptySqlite);
+            this.DeleteFromDisk(SampleSqlite);
+            this.DeleteFromDisk(SampleSqliteSecond);
+            this.DeleteFromDisk(SampleSqliteEscapeNeeded);
+            this.DeleteFromDisk(EmptySqlite);
         }
 
         public String TestFile1 => Path.Combine(TestContext.CurrentContext.TestDirectory, "testfile_1");
@@ -41,8 +41,8 @@ namespace BeyondCompareSQLitePlugin.Model.Test
         [TearDown]
         public void TearDown()
         {
-            if(File.Exists(TestFile1))
-                File.Delete(TestFile1);
+            if(File.Exists(this.TestFile1))
+                File.Delete(this.TestFile1);
         }
 
         private void DeleteFromDisk(String filename)

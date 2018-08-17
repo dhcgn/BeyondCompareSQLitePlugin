@@ -15,6 +15,7 @@ namespace BeyondCompareSQLitePlugin.Model
 
         public static void WriteTextReportToFile(DatabaseSummary tablesSummaryList, String path, Boolean containsData = true)
         {
+            // TODO Use Stream to relive memory
             var sb = CreateTextReportInternal(tablesSummaryList, containsData);
             File.WriteAllText(path, sb, Encoding.UTF8);
         }

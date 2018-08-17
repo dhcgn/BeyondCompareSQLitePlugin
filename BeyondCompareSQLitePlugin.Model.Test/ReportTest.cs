@@ -74,7 +74,7 @@ namespace BeyondCompareSQLitePlugin.Model.Test
         [TestCase(SampleSqlite, 1_939_856)]
         [TestCase(SampleSqliteSecond, 1_933_464)]
         [TestCase(EmptySqlite, 871)]
-        [TestCase(SampleSqliteEscapeNeeded, 1_940_253)]
+        [TestCase(SampleSqliteEscapeNeeded, 1_957_773)]
         public void CreateSummary_WriteTextReportToFile(String name, Int32 length)
         {
             #region Arrange
@@ -86,13 +86,13 @@ namespace BeyondCompareSQLitePlugin.Model.Test
             #region Act
 
             var databaseContent = DbReader.CreateSummary(path);
-            Report.WriteTextReportToFile(databaseContent, TestFile1);
+            Report.WriteTextReportToFile(databaseContent, this.TestFile1);
 
             #endregion
 
             #region Assert
 
-            Assert.That(new FileInfo(TestFile1), Has.Length.EqualTo(length));
+            Assert.That(new FileInfo(this.TestFile1), Has.Length.EqualTo(length));
 
             #endregion
         }
