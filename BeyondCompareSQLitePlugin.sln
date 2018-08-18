@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeyondCompareSQLitePlugin.M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeyondCompareSQLitePlugin.Test", "BeyondCompareSQLitePlugin.Test\BeyondCompareSQLitePlugin.Test.csproj", "{5BEE472F-4733-4788-91FE-4154926581AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteComparer", "SQLiteComparer\SQLiteComparer.csproj", "{219B3219-A077-47CF-96A0-425B08C1E967}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteComparer.Test", "SQLiteComparer.Test\SQLiteComparer.Test.csproj", "{4D5225BF-1D67-4E19-810C-CFF84A39E1C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,8 +37,19 @@ Global
 		{5BEE472F-4733-4788-91FE-4154926581AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BEE472F-4733-4788-91FE-4154926581AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BEE472F-4733-4788-91FE-4154926581AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{219B3219-A077-47CF-96A0-425B08C1E967}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{219B3219-A077-47CF-96A0-425B08C1E967}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{219B3219-A077-47CF-96A0-425B08C1E967}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{219B3219-A077-47CF-96A0-425B08C1E967}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D5225BF-1D67-4E19-810C-CFF84A39E1C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D5225BF-1D67-4E19-810C-CFF84A39E1C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D5225BF-1D67-4E19-810C-CFF84A39E1C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D5225BF-1D67-4E19-810C-CFF84A39E1C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {64A940B4-1ADB-4281-ABD7-37DCE9E093AD}
 	EndGlobalSection
 EndGlobal
