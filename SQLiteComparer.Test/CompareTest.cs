@@ -13,6 +13,8 @@ namespace SQLiteComparer.Test
     public class CompareTest : TestBase
     {
         [TestCase(SampleSqliteDiffTuple_1, SampleSqliteDiffTuple_1, Reason.None, false)]
+        [TestCase(SampleSqliteDiffTuple_1, SampleSqliteDiffTuple_1, Reason.ListOfTable, false)]
+        [TestCase(SampleSqliteDiffTuple_1, SampleSqliteDiffTuple_1, Reason.ListOfAttrbutes, false)]
         [TestCase(SampleSqliteDiffTuple_1, SampleSqliteDiffTuple_2, Reason.Data, true)]
         [TestCase(SampleSqliteDiffRows_1, SampleSqliteDiffRows_2, Reason.AmountRows, true)]
         public void CompareDataOnlyTest(String path1, String path2, Reason reason, bool hasDiff)
