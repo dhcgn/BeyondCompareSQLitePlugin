@@ -10,3 +10,7 @@ My use case is to use this in Beyond Compare, so I can compare SQLlite files ver
 
 See wiki for more informations
 https://github.com/dhcgn/Beyond-Compare-SQLite-Plugin/wiki
+
+## How to install
+
+See here [https://github.com/dhcgn/BeyondCompareSQLitePlugin/wiki/Install](https://github.com/dhcgn/BeyondCompareSQLitePlugin/wiki/Install)
