@@ -24,7 +24,6 @@ namespace BeyondCompareSQLitePlugin
         /// <returns></returns>
         public static Int32 Main(String[] args)
         {
-            EmbeddedLibsResolver.Init();
             return MainInternal(args);
         }
 

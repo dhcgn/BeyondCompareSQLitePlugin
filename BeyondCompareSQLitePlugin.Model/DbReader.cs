@@ -1,6 +1,6 @@
+using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -14,14 +14,14 @@ namespace BeyondCompareSQLitePlugin.Model
     {
         // Need this reference at runtime!
         // ReSharper disable once UnusedMember.Local
-        private static volatile Type dependencyProperty = typeof(SQLiteConnection);
+        private static volatile Type dependencyProperty = typeof(SqliteConnection);
 
         #region Public
 
         public static List<String> GetTableNamesContent(String source)
         {
             List<String> tables;
-            using (var connection = new SQLiteConnection(String.Format("Data Source={0};Version=3;Read Only=True;", source)))
+            using (var connection = new SqliteConnection(String.Format("Data Source={0};", source)))
             {
                 connection.Open();
                 tables = ReadTables(connection);
@@ -31,10 +31,8 @@ namespace BeyondCompareSQLitePlugin.Model
 
         public static DatabaseSummary CreateSummary(String source)
         {
-            PrepareInterop();
-
             var result = new DatabaseSummary();
-            using (var connection = new SQLiteConnection(String.Format("Data Source={0};Version=3;Read Only=True;", source)))
+            using (var connection = new SqliteConnection(String.Format("Data Source={0};", source)))
             {
                 connection.Open();
 
@@ -50,51 +48,15 @@ namespace BeyondCompareSQLitePlugin.Model
             return result;
         }
 
-        [System.Runtime.InteropServices.DllImport("kernel32.dll",
-            CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
-        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
-        static extern Boolean SetDllDirectory(String lpPathName);
-        
-        private static void PrepareInterop()
-        {
-            var path = new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath;
-            var dir = Path.GetDirectoryName(path);
-
-            var ressources = Assembly.GetExecutingAssembly().GetManifestResourceNames();
-
-            var processorRegisters = new[] { "x64", "x86"};
-
-            foreach (var processorRegister in processorRegisters)
-            {
-                Directory.CreateDirectory(Path.Combine(dir, processorRegister));
-            }
-
-            foreach (var processorRegister in processorRegisters)
-            {
-                var name = ressources.First(s => s.EndsWith($"{processorRegister}_SQLite.Interop.dll"));
-                var fullPath = Path.Combine(dir, processorRegister, "SQLite.Interop.dll");
-                if (!File.Exists(fullPath))
-                    using (var fileStream = File.OpenWrite(fullPath))
-                    {
-                        Assembly.GetExecutingAssembly().GetManifestResourceStream(name).CopyTo(fileStream);
-                    }
-            }
-
-            Int32 wsize = IntPtr.Size;
-            String libdir = (wsize == 4) ? "x86" : "x64";
-            String appPath = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
-            SetDllDirectory(Path.Combine(appPath, libdir));
-        }
-
         #endregion
 
         #region Private
 
-        private static List<String> ReadTables(SQLiteConnection dbConnection)
+        private static List<String> ReadTables(SqliteConnection dbConnection)
         {
             String sql = "SELECT name FROM sqlite_master WHERE type='table';";
-            var command = new SQLiteCommand(sql, dbConnection);
-            SQLiteDataReader reader = command.ExecuteReader();
+            var command = new SqliteCommand(sql, dbConnection);
+            SqliteDataReader reader = command.ExecuteReader();
 
             var tables = new List<String>();
 
@@ -106,11 +68,11 @@ namespace BeyondCompareSQLitePlugin.Model
             return tables.OrderBy(x => x).ToList();
         }
 
-        private static Int32 ReadSchemaVersion(SQLiteConnection dbConnection)
+        private static Int32 ReadSchemaVersion(SqliteConnection dbConnection)
         {
             String sql = "PRAGMA schema_version;";
-            var command = new SQLiteCommand(sql, dbConnection);
-            SQLiteDataReader reader = command.ExecuteReader();
+            var command = new SqliteCommand(sql, dbConnection);
+            SqliteDataReader reader = command.ExecuteReader();
 
             Int32 result = 0;
             while (reader.Read())
@@ -120,11 +82,11 @@ namespace BeyondCompareSQLitePlugin.Model
             return result;
         }
 
-        private static Int32 ReadUserVersion(SQLiteConnection dbConnection)
+        private static Int32 ReadUserVersion(SqliteConnection dbConnection)
         {
             String sql = "PRAGMA user_version;";
-            var command = new SQLiteCommand(sql, dbConnection);
-            SQLiteDataReader reader = command.ExecuteReader();
+            var command = new SqliteCommand(sql, dbConnection);
+            SqliteDataReader reader = command.ExecuteReader();
 
             Int32 result = 0;
             while (reader.Read())
@@ -134,7 +96,7 @@ namespace BeyondCompareSQLitePlugin.Model
             return result;
         }
 
-        private static List<TableSummary> CreateTableSummary(IEnumerable<String> tables, SQLiteConnection dbConnection)
+        private static List<TableSummary> CreateTableSummary(IEnumerable<String> tables, SqliteConnection dbConnection)
         {
             var result = new List<TableSummary>();
 
@@ -155,12 +117,12 @@ namespace BeyondCompareSQLitePlugin.Model
             return result;
         }
 
-        private static String ReadSchemaHash(String table, SQLiteConnection dbConnection)
+        private static String ReadSchemaHash(String table, SqliteConnection dbConnection)
         {
             String sql = String.Format("PRAGMA table_info('{0}');", table);
 
-            var command = new SQLiteCommand(sql, dbConnection);
-            SQLiteDataReader reader = command.ExecuteReader();
+            var command = new SqliteCommand(sql, dbConnection);
+            SqliteDataReader reader = command.ExecuteReader();
 
             var sb = new StringBuilder();
 
@@ -178,7 +140,7 @@ namespace BeyondCompareSQLitePlugin.Model
         }
 
 
-        private static String[,] GetData(String table, SQLiteConnection dbConnection, Int32 width, Int32 hight)
+        private static String[,] GetData(String table, SqliteConnection dbConnection, Int32 width, Int32 hight)
         {
             var result = new String[width, hight];
 
@@ -186,8 +148,8 @@ namespace BeyondCompareSQLitePlugin.Model
                 table,
                 Enumerable.Range(1, width).Select(i => i.ToString()).Aggregate((a, b) => a + ", " + b));
 
-            var command = new SQLiteCommand(sql, dbConnection);
-            SQLiteDataReader reader = command.ExecuteReader();
+            var command = new SqliteCommand(sql, dbConnection);
+            SqliteDataReader reader = command.ExecuteReader();
 
             Int32 rowCnt = 0;
             while (reader.Read())
@@ -202,11 +164,11 @@ namespace BeyondCompareSQLitePlugin.Model
             return result;
         }
 
-        private static Int32 ReadCount(String table, SQLiteConnection dbConnection)
+        private static Int32 ReadCount(String table, SqliteConnection dbConnection)
         {
             String sql = String.Format("SELECT Count(*) FROM '{0}';", table);
-            var command = new SQLiteCommand(sql, dbConnection);
-            SQLiteDataReader reader = command.ExecuteReader();
+            var command = new SqliteCommand(sql, dbConnection);
+            SqliteDataReader reader = command.ExecuteReader();
 
             Int32 result = 0;
             while (reader.Read())
@@ -217,7 +179,7 @@ namespace BeyondCompareSQLitePlugin.Model
         }
 
 
-        private static String[,] ReadTableData(String table, SQLiteConnection dbConnection)
+        private static String[,] ReadTableData(String table, SqliteConnection dbConnection)
         {
             var columnNames = ReadColumns(table, dbConnection);
             Int32 width = columnNames.Count;
@@ -230,12 +192,12 @@ namespace BeyondCompareSQLitePlugin.Model
             return result;
         }
 
-        private static List<String> ReadColumns(String table, SQLiteConnection dbConnection)
+        private static List<String> ReadColumns(String table, SqliteConnection dbConnection)
         {
             var sql = String.Format("PRAGMA table_info('{0}');", table);
 
-            var command = new SQLiteCommand(sql, dbConnection);
-            SQLiteDataReader reader = command.ExecuteReader();
+            var command = new SqliteCommand(sql, dbConnection);
+            SqliteDataReader reader = command.ExecuteReader();
 
             var columns = new List<String>();
             while (reader.Read())
